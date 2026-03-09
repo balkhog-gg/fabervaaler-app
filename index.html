@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fabervaale Style - Trading Advisor Prototype</title>
+  <style>
+    :root{
+      --bg:#0a0d14;
+      --bg2:#0f1420;
+      --panel:#111827;
+      --panel2:#151f30;
+      --line:#263247;
+      --text:#eef4ff;
+      --muted:#8ea1bf;
+      --blue:#60a5fa;
+      --teal:#2dd4bf;
+      --green:#34d399;
+      --yellow:#fbbf24;
+      --red:#f87171;
+      --violet:#a78bfa;
+      --shadow:0 12px 40px rgba(0,0,0,.35);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+      background:radial-gradient(circle at top, #14213a 0%, var(--bg) 35%, #06080e 100%);
+      color:var(--text);
+      line-height:1.45;
+    }
+    .app{max-width:1180px;margin:0 auto;padding:16px 16px 80px}
+    .hero,.card{background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .hero{padding:18px}
+    .badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.18);color:var(--blue);font-weight:700;font-size:12px;letter-spacing:.05em;text-transform:uppercase}
+    h1{font-size:clamp(28px,7vw,52px);line-height:1.02;margin:14px 0 10px}
+    h2{font-size:clamp(22px,5vw,32px);margin:0 0 10px}
+    h3{font-size:18px;margin:0 0 8px}
+    p{margin:0 0 12px}
+    .muted{color:var(--muted)}
+    .hero-grid,.grid,.upload-grid,.decision-grid,.footer-grid{display:grid;gap:16px}
+    .hero-grid{grid-template-columns:1fr}
+    .hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    .btn{appearance:none;border:none;border-radius:14px;padding:12px 16px;font-weight:700;cursor:pointer}
+    .btn-primary{background:linear-gradient(90deg,var(--blue),var(--teal));color:#07111f}
+    .btn-secondary{background:#192234;color:var(--text);border:1px solid var(--line)}
+    .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+    .stat{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:18px;padding:14px}
+    .stat b{display:block;font-size:15px;margin-bottom:4px}
+    .section{margin-top:18px}
+    .card{padding:16px}
+    .grid{grid-template-columns:1fr}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700;margin-bottom:10px}
+    .blue{background:rgba(96,165,250,.12);color:var(--blue)}
+    .green{background:rgba(52,211,153,.13);color:var(--green)}
+    .red{background:rgba(248,113,113,.13);color:var(--red)}
+    .yellow{background:rgba(251,191,36,.13);color:var(--yellow)}
+    .violet{background:rgba(167,139,250,.13);color:var(--violet)}
+    .diagram{overflow:auto}
+    .diagram svg{width:100%;height:auto;min-width:280px}
+    .steps{margin:0;padding-left:18px}
+    .steps li{margin:8px 0}
+    .upload-grid{grid-template-columns:1fr}
+    .dropzone{padding:16px;border-radius:18px;border:1.5px dashed #395073;background:#0d1320;min-height:180px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:10px}
+    .dropzone input{max-width:100%}
+    .preview{width:100%;min-height:120px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#0a101b;display:flex;align-items:center;justify-content:center}
+    .preview img{max-width:100%;max-height:220px;display:block}
+    .form-grid{display:grid;grid-template-columns:1fr;gap:12px}
+    .field{background:#0d1320;border:1px solid var(--line);border-radius:16px;padding:12px}
+    .field label{display:block;font-size:13px;font-weight:700;margin-bottom:8px;color:#c7d7f3}
+    .field select,.field input,.field textarea{width:100%;padding:12px;border-radius:12px;border:1px solid #304058;background:#111a29;color:var(--text);font:inherit}
+    .field textarea{min-height:88px;resize:vertical}
+    .decision-grid{grid-template-columns:1fr;align-items:start}
+    .score-card{background:#0d1320;border:1px solid var(--line);border-radius:18px;padding:14px}
+    .score-bar{height:14px;background:#0b0f18;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin:10px 0 8px}
+    .score-fill{height:100%;width:50%;background:linear-gradient(90deg,var(--red),var(--yellow),var(--green))}
+    .decision{font-size:26px;font-weight:800}
+    .tag-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .tag{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#121c2c;border:1px solid var(--line);color:#bfd0eb}
+    .list{margin:0;padding-left:18px}
+    .list li{margin:6px 0}
+    code.inline{background:#101827;padding:2px 6px;border-radius:8px;border:1px solid var(--line);color:#d6e6ff}
+    .footer-grid{grid-template-columns:1fr}
+    @media (min-width:760px){
+      .hero-grid{grid-template-columns:1.2fr .8fr}
+      .grid{grid-template-columns:repeat(2,1fr)}
+      .upload-grid{grid-template-columns:repeat(3,1fr)}
+      .decision-grid{grid-template-columns:1.05fr .95fr}
+      .form-grid{grid-template-columns:repeat(2,1fr)}
+      .footer-grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (min-width:1080px){
+      .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="badge">Mobile first • Dark theme • Prototype advisor</div>
+          <h1>Fabervaale Style<br>Trading Advisor</h1>
+          <p class="muted">Prototype mono-fichier HTML pour structurer une décision de scalping à partir de captures M1 / M5 / M15 et de critères manuels. Ce n’est pas une IA magique : c’est un assistant de décision inspiré d’une logique order flow, zone mère, confirmation LTF, exécution et gestion du risque.</p>
+          <div class="hero-actions">
+            <button class="btn btn-primary" onclick="document.getElementById('analyzer').scrollIntoView({behavior:'smooth'})">Ouvrir l'analyse</button>
+            <button class="btn btn-secondary" onclick="window.print()">Exporter en PDF</button>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat"><b>Cadre</b><span class="muted">15m contexte • 5m zone • 1m exécution</span></div>
+          <div class="stat"><b>Marché idéal</b><span class="muted">NQ / MNQ puis ES / MES</span></div>
+          <div class="stat"><b>Décision</b><span class="muted">Long / Short / No trade</span></div>
+          <div class="stat"><b>But</b><span class="muted">Réduire l'impulsivité, pas promettre un edge automatique</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section grid">
+      <div class="card">
+        <span class="pill blue">Framework</span>
+        <h2>Logique centrale</h2>
+        <ol class="steps">
+          <li>Définir le contexte M15.</li>
+          <li>Repérer la zone mère en M5.</li>
+          <li>Attendre le retour du prix.</li>
+          <li>Confirmer la rotation en M1.</li>
+          <li>Entrer sur retest propre avec invalidation claire.</li>
+        </ol>
+      </div>
+      <div class="card">
+        <span class="pill violet">Filtre mental</span>
+        <h2>Règles d'or</h2>
+        <ul class="list">
+          <li>Pas de structure claire = pas de trade.</li>
+          <li>Pas de vraie zone = pas de trade.</li>
+          <li>Pas de confirmation M1 = prudence maximale.</li>
+          <li>Version agressive = taille plus petite.</li>
+          <li>Le meilleur trade est souvent celui qu'on laisse passer.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section grid-3">
+      <div class="card diagram">
+        <span class="pill red">Short</span>
+        <svg viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg">
+          <rect x="220" y="18" width="110" height="36" rx="10" fill="rgba(96,165,250,.15)" stroke="#60a5fa" stroke-width="2"/>
+          <text x="275" y="40" fill="#dbeafe" text-anchor="middle" font-size="13" font-weight="700">Zone mère</text>
+          <polyline points="22,176 76,156 124,162 172,144 224,76 254,62 280,54 315,46" fill="none" stroke="#fbbf24" stroke-width="4" stroke-dasharray="6 5" stroke-linecap="round"/>
+          <polyline points="316,45 301,70 276,95 245,118 204,140 158,160 106,179 44,196" fill="none" stroke="#f87171" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="205" cy="119" r="12" fill="rgba(167,139,250,.18)" stroke="#a78bfa" stroke-width="3"/>
+          <text x="205" y="123" fill="#e9ddff" text-anchor="middle" font-size="10" font-weight="800">CH</text>
+        </svg>
+      </div>
+      <div class="card diagram">
+        <span class="pill green">Long</span>
+        <svg viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg">
+          <rect x="32" y="154" width="118" height="34" rx="10" fill="rgba(96,165,250,.15)" stroke="#60a5fa" stroke-width="2"/>
+          <text x="91" y="175" fill="#dbeafe" text-anchor="middle" font-size="13" font-weight="700">Zone mère</text>
+          <polyline points="324,54 283,75 250,96 218,119 180,143 144,160 110,166 82,171" fill="none" stroke="#fbbf24" stroke-width="4" stroke-dasharray="6 5" stroke-linecap="round"/>
+          <polyline points="82,171 99,159 118,147 146,127 175,108 206,91 242,68 280,45 322,24" fill="none" stroke="#34d399" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="148" cy="127" r="12" fill="rgba(167,139,250,.18)" stroke="#a78bfa" stroke-width="3"/>
+          <text x="148" y="131" fill="#e9ddff" text-anchor="middle" font-size="10" font-weight="800">CH</text>
+        </svg>
+      </div>
+      <div class="card">
+        <span class="pill yellow">Inducement</span>
+        <h2>Hiérarchie des zones</h2>
+        <p class="muted">Toutes les zones ne se valent pas. Le prototype te force à distinguer une zone mère d'une zone secondaire qui attire les entrées trop tôt.</p>
+        <ul class="list">
+          <li>Zone extrême avant impulsion = priorité</li>
+          <li>Zone intermédiaire = méfiance</li>
+          <li>Balayage puis vraie réaction = scénario classique</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section card" id="analyzer">
+      <span class="pill blue">Analyse multi-timeframe</span>
+      <h2>Advisor screenshot M1 / M5 / M15</h2>
+      <p class="muted">Ajoute tes captures, puis renseigne les critères. Le système calcule un score <strong>Long / Short / No trade</strong> à partir des réponses, mais la décision finale reste humaine.</p>
+
+      <div class="upload-grid" style="margin-top:14px">
+        <div class="dropzone">
+          <strong>Capture M15</strong>
+          <input type="file" id="img15" accept="image/*">
+          <div class="preview" id="prev15">Aperçu M15</div>
+        </div>
+        <div class="dropzone">
+          <strong>Capture M5</strong>
+          <input type="file" id="img5" accept="image/*">
+          <div class="preview" id="prev5">Aperçu M5</div>
+        </div>
+        <div class="dropzone">
+          <strong>Capture M1</strong>
+          <input type="file" id="img1" accept="image/*">
+          <div class="preview" id="prev1">Aperçu M1</div>
+        </div>
+      </div>
+
+      <div class="form-grid" style="margin-top:16px">
+        <div class="field"><label>Tendance M15</label><select id="trend"><option value="0">Neutre / range</option><option value="2">Haussière claire</option><option value="-2">Baissière claire</option><option value="1">Haussière fragile</option><option value="-1">Baissière fragile</option></select></div>
+        <div class="field"><label>Zone mère M5 identifiée ?</label><select id="mother"><option value="0">Non / doute</option><option value="2">Oui, très propre</option><option value="1">Oui, mais moyenne</option></select></div>
+        <div class="field"><label>Le prix est dans la zone ?</label><select id="zoneTouch"><option value="0">Non</option><option value="2">Oui, au contact / dedans</option><option value="1">Proche mais pas dedans</option></select></div>
+        <div class="field"><label>Réaction M1 dans la zone</label><select id="reaction"><option value="0">Aucune</option><option value="2">Rejet / absorption visible</option><option value="1">Ralentissement léger</option></select></div>
+        <div class="field"><label>CHoCH / cassure locale M1</label><select id="choch"><option value="0">Non</option><option value="2">Oui, clair</option><option value="1">Oui, mais sale</option></select></div>
+        <div class="field"><label>Pullback / retest après cassure</label><select id="retest"><option value="0">Pas de retest</option><option value="2">Retest propre</option><option value="1">Retest moyen</option></select></div>
+        <div class="field"><label>Confluence volume / delta</label><select id="delta"><option value="0">Aucune donnée</option><option value="2">Confluence claire</option><option value="1">Confluence légère</option><option value="-1">Conflit avec l'idée</option></select></div>
+        <div class="field"><label>Liquidité proche / objectif logique</label><select id="liquidity"><option value="0">Pas clair</option><option value="2">Oui, objectif évident</option><option value="1">Objectif possible</option></select></div>
+        <div class="field"><label>Qualité du contexte session</label><select id="session"><option value="0">Heure moyenne</option><option value="2">Open / moment propre</option><option value="1">Volatilité correcte</option><option value="-1">Heure faible / marché sale</option></select></div>
+        <div class="field"><label>Biais recherché</label><select id="bias"><option value="short">Short</option><option value="long">Long</option><option value="neutral">Neutre / laisser l'outil choisir</option></select></div>
+        <div class="field"><label>Plan d'invalidation</label><input id="invalid" placeholder="Ex : au-dessus du mini sommet M1"></div>
+        <div class="field"><label>Notes de contexte</label><textarea id="notes" placeholder="Ex : sweep sur HOD, retour dans supply 5m, CVD qui diverge..."></textarea></div>
+      </div>
+
+      <div class="decision-grid" style="margin-top:16px">
+        <div class="score-card">
+          <h3>Résultat</h3>
+          <div class="score-bar"><div class="score-fill" id="fill"></div></div>
+          <div class="decision" id="decision">No trade</div>
+          <p class="muted" id="summary">Renseigne les critères puis clique sur analyser.</p>
+          <div class="tag-row" id="tags"></div>
+        </div>
+        <div class="score-card">
+          <h3>Checklist automatique</h3>
+          <ul class="list" id="checklist">
+            <li>Contexte non analysé.</li>
+            <li>Zone mère non validée.</li>
+            <li>Pas encore de décision.</li>
+          </ul>
+          <button class="btn btn-primary" style="margin-top:14px;width:100%" onclick="analyzeTrade()">Analyser le setup</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section footer-grid">
+      <div class="card">
+        <span class="pill green">GitHub</span>
+        <h2>Déploiement simple</h2>
+        <ol class="steps">
+          <li>Créer un dépôt GitHub nommé <code class="inline">fabervaale-advisor</code>.</li>
+          <li>Ajouter ce fichier comme <code class="inline">index.html</code>.</li>
+          <li>Pousser le repo puis activer GitHub Pages dans Settings → Pages.</li>
+          <li>Sélectionner la branche <code class="inline">main</code> et le dossier root.</li>
+          <li>Ton site sera en ligne en quelques instants.</li>
+        </ol>
+      </div>
+      <div class="card">
+        <span class="pill violet">Suite logique</span>
+        <h2>Version premium à construire</h2>
+        <ul class="list">
+          <li>Passage en interface mobile-first React / Next.js.</li>
+          <li>Vrai système de scoring pondéré par session et qualité de zone.</li>
+          <li>Compte utilisateur, journal, historique de screenshots.</li>
+          <li>Module de revue post-trade et statistiques.</li>
+          <li>Plus tard : backend d'analyse image, jamais en mode “signal magique”.</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    function previewImage(inputId, previewId){
+      const input = document.getElementById(inputId);
+      const preview = document.getElementById(previewId);
+      input.addEventListener('change', () => {
+        const file = input.files && input.files[0];
+        if(!file){ preview.textContent = 'Aperçu'; return; }
+        const reader = new FileReader();
+        reader.onload = e => {
+          preview.innerHTML = '<img src="'+e.target.result+'" alt="preview">';
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    previewImage('img15','prev15');
+    previewImage('img5','prev5');
+    previewImage('img1','prev1');
+
+    function analyzeTrade(){
+      const trend = Number(document.getElementById('trend').value);
+      const mother = Number(document.getElementById('mother').value);
+      const zoneTouch = Number(document.getElementById('zoneTouch').value);
+      const reaction = Number(document.getElementById('reaction').value);
+      const choch = Number(document.getElementById('choch').value);
+      const retest = Number(document.getElementById('retest').value);
+      const delta = Number(document.getElementById('delta').value);
+      const liquidity = Number(document.getElementById('liquidity').value);
+      const session = Number(document.getElementById('session').value);
+      const bias = document.getElementById('bias').value;
+      const invalid = document.getElementById('invalid').value.trim();
+      const notes = document.getElementById('notes').value.trim();
+
+      let base = mother + zoneTouch + reaction + choch + retest + delta + liquidity + session;
+      let directionScore = 0;
+      if (bias === 'long') directionScore = trend > 0 ? 2 + trend : -3;
+      else if (bias === 'short') directionScore = trend < 0 ? 2 + Math.abs(trend) : -3;
+      else directionScore = trend;
+
+      let score = base + directionScore;
+      let max = 20;
+      let pct = Math.max(0, Math.min(100, Math.round((score / max) * 100)));
+      let decision = 'No trade';
+      let summary = 'Le setup ne réunit pas encore assez de critères.';
+      let tags = [];
+
+      const trendText = trend > 0 ? 'contexte haussier' : trend < 0 ? 'contexte baissier' : 'contexte neutre';
+
+      if (score >= 13) {
+        decision = bias === 'short' ? 'SHORT possible' : bias === 'long' ? 'LONG possible' : trend >= 0 ? 'LONG possible' : 'SHORT possible';
+        summary = 'Le setup est cohérent sur plusieurs critères. Il faut encore vérifier le stop, l’invalidation et le ratio avant d’entrer.';
+        tags = ['zone validée','rotation M1','confluence acceptable', trendText];
+      } else if (score >= 9) {
+        decision = 'Setup surveillable';
+        summary = 'Il y a une base intéressante mais la confirmation reste incomplète. Attends un meilleur retest ou une cassure plus propre.';
+        tags = ['potentiel présent','patience', trendText];
+      } else {
+        tags = ['pas assez propre', trendText];
+      }
+
+      if (!invalid) tags.push('invalidation absente');
+      if (!notes) tags.push('notes manquantes');
+
+      document.getElementById('fill').style.width = pct + '%';
+      document.getElementById('decision').textContent = decision + ' • ' + pct + '/100';
+      document.getElementById('summary').textContent = summary;
+      document.getElementById('tags').innerHTML = tags.map(t => '<span class="tag">'+t+'</span>').join('');
+
+      const checklist = [];
+      checklist.push(trend !== 0 ? 'Contexte défini.' : 'Contexte encore neutre ou flou.');
+      checklist.push(mother > 0 ? 'Zone mère identifiée.' : 'Zone mère non validée.');
+      checklist.push(zoneTouch > 0 ? 'Prix proche / dans la zone.' : 'Le prix n’est pas encore au bon endroit.');
+      checklist.push(reaction > 0 ? 'Réaction M1 détectée.' : 'Pas de vraie réaction M1.');
+      checklist.push(choch > 0 ? 'Cassure locale / CHoCH présente.' : 'Pas de confirmation structurelle M1.');
+      checklist.push(retest > 0 ? 'Retest exploitable.' : 'Pas de retest propre.');
+      checklist.push(invalid ? 'Invalidation notée : ' + invalid : 'Ajoute une invalidation claire avant toute entrée.');
+      document.getElementById('checklist').innerHTML = checklist.map(i => '<li>'+i+'</li>').join('');
+    }
+  </script>
+</body>
+</html>

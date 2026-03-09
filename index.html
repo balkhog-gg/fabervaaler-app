@@ -2,343 +2,657 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fabervaale Style - Trading Advisor Prototype</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Fabervaale Advisor V2</title>
   <style>
     :root{
-      --bg:#0a0d14;
-      --bg2:#0f1420;
-      --panel:#111827;
-      --panel2:#151f30;
-      --line:#263247;
-      --text:#eef4ff;
-      --muted:#8ea1bf;
-      --blue:#60a5fa;
-      --teal:#2dd4bf;
-      --green:#34d399;
-      --yellow:#fbbf24;
-      --red:#f87171;
-      --violet:#a78bfa;
-      --shadow:0 12px 40px rgba(0,0,0,.35);
+      --bg:#060b16;
+      --bg2:#0b1222;
+      --card:#0d1730;
+      --card2:#101d3c;
+      --line:rgba(120,160,255,.18);
+      --soft:rgba(132,177,255,.12);
+      --text:#edf3ff;
+      --muted:#a6b7db;
+      --blue:#69a8ff;
+      --cyan:#35d0d8;
+      --green:#25d98f;
+      --yellow:#f5c244;
+      --orange:#ff9e57;
+      --red:#ff6f7d;
+      --purple:#9b7bff;
+      --shadow:0 12px 40px rgba(0,0,0,.32);
       --radius:22px;
+      --radius-sm:16px;
+      --max:1220px;
     }
     *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
     body{
       margin:0;
-      font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
-      background:radial-gradient(circle at top, #14213a 0%, var(--bg) 35%, #06080e 100%);
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(circle at 15% 0%, rgba(58,110,255,.18), transparent 32%),
+        radial-gradient(circle at 85% 0%, rgba(53,208,216,.12), transparent 28%),
+        linear-gradient(180deg, #050914 0%, #08101d 40%, #050914 100%);
       color:var(--text);
-      line-height:1.45;
     }
-    .app{max-width:1180px;margin:0 auto;padding:16px 16px 80px}
-    .hero,.card{background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
-    .hero{padding:18px}
-    .badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.18);color:var(--blue);font-weight:700;font-size:12px;letter-spacing:.05em;text-transform:uppercase}
-    h1{font-size:clamp(28px,7vw,52px);line-height:1.02;margin:14px 0 10px}
-    h2{font-size:clamp(22px,5vw,32px);margin:0 0 10px}
-    h3{font-size:18px;margin:0 0 8px}
-    p{margin:0 0 12px}
+    .shell{max-width:var(--max);margin:0 auto;padding:18px 14px 100px}
+    .topbar{
+      position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);
+      background:rgba(5,9,20,.78);border-bottom:1px solid rgba(255,255,255,.05);
+    }
+    .topbar-inner{max-width:var(--max);margin:0 auto;padding:12px 14px;display:flex;gap:10px;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2px}
+    .logo{
+      width:38px;height:38px;border-radius:14px;background:linear-gradient(135deg,var(--blue),var(--cyan));
+      box-shadow:0 8px 28px rgba(78,145,255,.35);
+      position:relative;overflow:hidden;
+    }
+    .logo:before,.logo:after{content:"";position:absolute;background:rgba(255,255,255,.9)}
+    .logo:before{width:52%;height:18%;left:24%;top:41%;border-radius:999px}
+    .logo:after{height:52%;width:18%;top:24%;left:41%;border-radius:999px}
+    .top-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .chip,.tab,.btn,.mini-btn{
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.03);
+      color:var(--text);text-decoration:none;
+      border-radius:999px;
+      display:inline-flex;align-items:center;justify-content:center;
+      gap:8px;
+    }
+    .chip{padding:8px 12px;font-size:12px;color:#96b7ff;background:rgba(92,137,255,.12)}
+    .btn{padding:14px 18px;font-weight:800;cursor:pointer}
+    .btn-primary{background:linear-gradient(135deg,var(--blue),var(--cyan));color:#04101b;border:none;box-shadow:0 10px 30px rgba(71,175,255,.28)}
+    .btn-ghost{background:rgba(255,255,255,.04)}
+    .mini-btn{padding:10px 14px;font-weight:700;cursor:pointer}
+    .tabs{display:flex;gap:8px;overflow:auto;padding:8px 0 2px;scrollbar-width:none}
+    .tabs::-webkit-scrollbar{display:none}
+    .tab{padding:10px 14px;font-weight:700;cursor:pointer;white-space:nowrap;background:rgba(255,255,255,.03)}
+    .tab.active{background:linear-gradient(135deg,rgba(105,168,255,.2),rgba(53,208,216,.16));border-color:rgba(105,168,255,.35)}
+
+    .hero{
+      margin-top:18px;padding:22px;border:1px solid var(--line);border-radius:32px;box-shadow:var(--shadow);
+      background:linear-gradient(135deg, rgba(16,29,60,.92), rgba(10,19,39,.96));
+      display:grid;grid-template-columns:1.4fr .95fr;gap:18px;
+    }
+    .hero h1{font-size:clamp(38px,7vw,72px);line-height:.97;margin:12px 0 14px;letter-spacing:-1.8px}
+    .hero p{font-size:clamp(16px,2.7vw,22px);color:var(--muted);line-height:1.5;margin:0 0 18px;max-width:780px}
+    .hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .stat{
+      border:1px solid rgba(255,255,255,.06);border-radius:24px;padding:18px;
+      background:rgba(255,255,255,.03)
+    }
+    .stat h4{margin:0 0 8px;font-size:14px;color:#d9e5ff}
+    .stat p{margin:0;color:var(--muted);font-size:15px}
+    .hero-steps{display:grid;gap:10px;margin:16px 0 0}
+    .step{
+      display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:start;
+      border:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.03);border-radius:18px;padding:12px;
+    }
+    .step-num{width:40px;height:40px;border-radius:14px;background:linear-gradient(135deg,rgba(105,168,255,.25),rgba(53,208,216,.18));display:grid;place-items:center;font-weight:900;color:#dff2ff}
+    .step b{display:block;margin-bottom:4px}
+    .step span{color:var(--muted);font-size:14px;line-height:1.45}
+
+    .section{display:none;margin-top:22px}
+    .section.active{display:block}
+
+    .grid{display:grid;gap:16px}
+    .grid-2{grid-template-columns:1fr 1fr}
+    .grid-3{grid-template-columns:repeat(3,1fr)}
+    .card{
+      background:linear-gradient(180deg,rgba(11,20,39,.95),rgba(7,14,28,.98));
+      border:1px solid var(--line);border-radius:28px;padding:18px;box-shadow:var(--shadow)
+    }
+    .card h2,.card h3{margin:0 0 10px}
+    .card p,.card li{color:var(--muted);line-height:1.55}
+    .badge{display:inline-flex;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:800;margin-bottom:12px}
+    .badge-blue{background:rgba(105,168,255,.15);color:#83b3ff}
+    .badge-green{background:rgba(37,217,143,.15);color:#5ae1a5}
+    .badge-red{background:rgba(255,111,125,.15);color:#ff8f9a}
+    .badge-yellow{background:rgba(245,194,68,.14);color:#ffd76f}
+    .badge-purple{background:rgba(155,123,255,.15);color:#bea6ff}
+
+    .tutorial{
+      display:grid;grid-template-columns:1.1fr .9fr;gap:16px
+    }
+    .list-clean{margin:0;padding-left:18px}
+    .list-clean li{margin:8px 0}
+
+    .example-chart{
+      border-radius:24px;padding:18px;background:linear-gradient(180deg,#071126,#0a1630);border:1px solid rgba(126,164,255,.2);
+      min-height:280px;position:relative;overflow:hidden
+    }
+    .example-chart svg{width:100%;height:240px;display:block}
+    .legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .legend span{font-size:12px;padding:8px 10px;border-radius:999px;background:rgba(255,255,255,.04);color:#d9e6ff;border:1px solid rgba(255,255,255,.06)}
+    .caption{margin-top:12px;font-size:14px;color:var(--muted)}
+
+    .analyzer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .upload-box{
+      border:1px dashed rgba(122,165,255,.35);border-radius:24px;padding:16px;background:rgba(6,12,25,.55)
+    }
+    .preview{
+      margin-top:12px;border:1px solid rgba(255,255,255,.06);height:220px;border-radius:18px;background:#050b15 center/cover no-repeat;display:grid;place-items:center;color:#cfe0ff
+    }
+    .preview.small{height:180px}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+    label{display:block;font-size:14px;font-weight:700;margin-bottom:8px;color:#dce8ff}
+    select,input,textarea{
+      width:100%;padding:16px;border-radius:18px;border:1px solid rgba(255,255,255,.08);
+      background:#081226;color:var(--text);font:inherit;outline:none
+    }
+    textarea{min-height:120px;resize:vertical}
+    .result-wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;margin-top:16px}
+    .scorebar{height:18px;border-radius:999px;background:rgba(255,255,255,.05);overflow:hidden;border:1px solid rgba(255,255,255,.06)}
+    .scorefill{height:100%;width:20%;background:linear-gradient(90deg,var(--red),var(--orange),var(--yellow),#7cd96a,var(--green))}
+    .result-title{font-size:48px;line-height:1;margin:14px 0 8px;font-weight:900}
     .muted{color:var(--muted)}
-    .hero-grid,.grid,.upload-grid,.decision-grid,.footer-grid{display:grid;gap:16px}
-    .hero-grid{grid-template-columns:1fr}
-    .hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
-    .btn{appearance:none;border:none;border-radius:14px;padding:12px 16px;font-weight:700;cursor:pointer}
-    .btn-primary{background:linear-gradient(90deg,var(--blue),var(--teal));color:#07111f}
-    .btn-secondary{background:#192234;color:var(--text);border:1px solid var(--line)}
-    .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
-    .stat{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:18px;padding:14px}
-    .stat b{display:block;font-size:15px;margin-bottom:4px}
-    .section{margin-top:18px}
-    .card{padding:16px}
-    .grid{grid-template-columns:1fr}
-    .pill{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700;margin-bottom:10px}
-    .blue{background:rgba(96,165,250,.12);color:var(--blue)}
-    .green{background:rgba(52,211,153,.13);color:var(--green)}
-    .red{background:rgba(248,113,113,.13);color:var(--red)}
-    .yellow{background:rgba(251,191,36,.13);color:var(--yellow)}
-    .violet{background:rgba(167,139,250,.13);color:var(--violet)}
-    .diagram{overflow:auto}
-    .diagram svg{width:100%;height:auto;min-width:280px}
-    .steps{margin:0;padding-left:18px}
-    .steps li{margin:8px 0}
-    .upload-grid{grid-template-columns:1fr}
-    .dropzone{padding:16px;border-radius:18px;border:1.5px dashed #395073;background:#0d1320;min-height:180px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:10px}
-    .dropzone input{max-width:100%}
-    .preview{width:100%;min-height:120px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#0a101b;display:flex;align-items:center;justify-content:center}
-    .preview img{max-width:100%;max-height:220px;display:block}
-    .form-grid{display:grid;grid-template-columns:1fr;gap:12px}
-    .field{background:#0d1320;border:1px solid var(--line);border-radius:16px;padding:12px}
-    .field label{display:block;font-size:13px;font-weight:700;margin-bottom:8px;color:#c7d7f3}
-    .field select,.field input,.field textarea{width:100%;padding:12px;border-radius:12px;border:1px solid #304058;background:#111a29;color:var(--text);font:inherit}
-    .field textarea{min-height:88px;resize:vertical}
-    .decision-grid{grid-template-columns:1fr;align-items:start}
-    .score-card{background:#0d1320;border:1px solid var(--line);border-radius:18px;padding:14px}
-    .score-bar{height:14px;background:#0b0f18;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin:10px 0 8px}
-    .score-fill{height:100%;width:50%;background:linear-gradient(90deg,var(--red),var(--yellow),var(--green))}
-    .decision{font-size:26px;font-weight:800}
-    .tag-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-    .tag{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#121c2c;border:1px solid var(--line);color:#bfd0eb}
-    .list{margin:0;padding-left:18px}
-    .list li{margin:6px 0}
-    code.inline{background:#101827;padding:2px 6px;border-radius:8px;border:1px solid var(--line);color:#d6e6ff}
-    .footer-grid{grid-template-columns:1fr}
-    @media (min-width:760px){
-      .hero-grid{grid-template-columns:1.2fr .8fr}
-      .grid{grid-template-columns:repeat(2,1fr)}
-      .upload-grid{grid-template-columns:repeat(3,1fr)}
-      .decision-grid{grid-template-columns:1.05fr .95fr}
-      .form-grid{grid-template-columns:repeat(2,1fr)}
-      .footer-grid{grid-template-columns:repeat(2,1fr)}
+    .checklist{padding-left:20px}
+    .checklist li{margin:10px 0;color:#dce7ff}
+
+    .guide-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .source-list{display:grid;gap:10px}
+    .source{
+      padding:14px;border-radius:18px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)
     }
-    @media (min-width:1080px){
-      .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .source b{display:block;margin-bottom:6px}
+    .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .kpi{padding:16px;border-radius:20px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+    .kpi strong{display:block;font-size:28px;margin-top:8px}
+
+    .journal-actions{display:flex;gap:10px;flex-wrap:wrap}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:12px 10px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;font-size:14px;vertical-align:top}
+    th{color:#d9e6ff}
+    td{color:var(--muted)}
+    .pill{display:inline-flex;padding:7px 10px;border-radius:999px;font-weight:800;font-size:12px}
+    .pill-long{background:rgba(37,217,143,.16);color:#66e6af}
+    .pill-short{background:rgba(255,111,125,.14);color:#ff9aa3}
+    .pill-no{background:rgba(245,194,68,.16);color:#ffd972}
+
+    .footer-note{margin-top:18px;font-size:13px;color:#8ea3ca;text-align:center}
+
+    @media (max-width: 980px){
+      .hero,.tutorial,.result-wrap,.guide-cards,.kpi-row,.grid-3,.grid-2,.analyzer-grid,.form-grid{grid-template-columns:1fr}
+      .hero-grid{grid-template-columns:1fr 1fr}
+      .topbar-inner{align-items:flex-start;flex-direction:column}
+    }
+    @media (max-width: 640px){
+      .shell{padding:14px 12px 80px}
+      .hero{padding:18px;border-radius:24px}
+      .card{padding:16px;border-radius:22px}
+      .hero-grid{grid-template-columns:1fr}
+      .brand span:last-child{font-size:14px}
+      .result-title{font-size:36px}
+      .btn,.mini-btn{width:100%}
+      .top-actions{width:100%}
+      .top-actions .mini-btn{flex:1}
     }
   </style>
 </head>
 <body>
-  <div class="app">
-    <section class="hero">
-      <div class="hero-grid">
-        <div>
-          <div class="badge">Mobile first • Dark theme • Prototype advisor</div>
-          <h1>Fabervaale Style<br>Trading Advisor</h1>
-          <p class="muted">Prototype mono-fichier HTML pour structurer une décision de scalping à partir de captures M1 / M5 / M15 et de critères manuels. Ce n’est pas une IA magique : c’est un assistant de décision inspiré d’une logique order flow, zone mère, confirmation LTF, exécution et gestion du risque.</p>
-          <div class="hero-actions">
-            <button class="btn btn-primary" onclick="document.getElementById('analyzer').scrollIntoView({behavior:'smooth'})">Ouvrir l'analyse</button>
-            <button class="btn btn-secondary" onclick="window.print()">Exporter en PDF</button>
-          </div>
-        </div>
-        <div class="stats">
-          <div class="stat"><b>Cadre</b><span class="muted">15m contexte • 5m zone • 1m exécution</span></div>
-          <div class="stat"><b>Marché idéal</b><span class="muted">NQ / MNQ puis ES / MES</span></div>
-          <div class="stat"><b>Décision</b><span class="muted">Long / Short / No trade</span></div>
-          <div class="stat"><b>But</b><span class="muted">Réduire l'impulsivité, pas promettre un edge automatique</span></div>
-        </div>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="logo"></div>
+        <span>Fabervaale Advisor V2</span>
       </div>
-    </section>
-
-    <section class="section grid">
-      <div class="card">
-        <span class="pill blue">Framework</span>
-        <h2>Logique centrale</h2>
-        <ol class="steps">
-          <li>Définir le contexte M15.</li>
-          <li>Repérer la zone mère en M5.</li>
-          <li>Attendre le retour du prix.</li>
-          <li>Confirmer la rotation en M1.</li>
-          <li>Entrer sur retest propre avec invalidation claire.</li>
-        </ol>
+      <div class="top-actions">
+        <button class="mini-btn" onclick="showTab('home')">Accueil</button>
+        <button class="mini-btn" onclick="showTab('analyzer')">Analyse</button>
+        <button class="mini-btn" onclick="showTab('guide')">Données</button>
+        <button class="mini-btn" onclick="showTab('journal')">Journal</button>
       </div>
-      <div class="card">
-        <span class="pill violet">Filtre mental</span>
-        <h2>Règles d'or</h2>
-        <ul class="list">
-          <li>Pas de structure claire = pas de trade.</li>
-          <li>Pas de vraie zone = pas de trade.</li>
-          <li>Pas de confirmation M1 = prudence maximale.</li>
-          <li>Version agressive = taille plus petite.</li>
-          <li>Le meilleur trade est souvent celui qu'on laisse passer.</li>
-        </ul>
-      </div>
-    </section>
-
-    <section class="section grid-3">
-      <div class="card diagram">
-        <span class="pill red">Short</span>
-        <svg viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg">
-          <rect x="220" y="18" width="110" height="36" rx="10" fill="rgba(96,165,250,.15)" stroke="#60a5fa" stroke-width="2"/>
-          <text x="275" y="40" fill="#dbeafe" text-anchor="middle" font-size="13" font-weight="700">Zone mère</text>
-          <polyline points="22,176 76,156 124,162 172,144 224,76 254,62 280,54 315,46" fill="none" stroke="#fbbf24" stroke-width="4" stroke-dasharray="6 5" stroke-linecap="round"/>
-          <polyline points="316,45 301,70 276,95 245,118 204,140 158,160 106,179 44,196" fill="none" stroke="#f87171" stroke-width="5" stroke-linecap="round"/>
-          <circle cx="205" cy="119" r="12" fill="rgba(167,139,250,.18)" stroke="#a78bfa" stroke-width="3"/>
-          <text x="205" y="123" fill="#e9ddff" text-anchor="middle" font-size="10" font-weight="800">CH</text>
-        </svg>
-      </div>
-      <div class="card diagram">
-        <span class="pill green">Long</span>
-        <svg viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg">
-          <rect x="32" y="154" width="118" height="34" rx="10" fill="rgba(96,165,250,.15)" stroke="#60a5fa" stroke-width="2"/>
-          <text x="91" y="175" fill="#dbeafe" text-anchor="middle" font-size="13" font-weight="700">Zone mère</text>
-          <polyline points="324,54 283,75 250,96 218,119 180,143 144,160 110,166 82,171" fill="none" stroke="#fbbf24" stroke-width="4" stroke-dasharray="6 5" stroke-linecap="round"/>
-          <polyline points="82,171 99,159 118,147 146,127 175,108 206,91 242,68 280,45 322,24" fill="none" stroke="#34d399" stroke-width="5" stroke-linecap="round"/>
-          <circle cx="148" cy="127" r="12" fill="rgba(167,139,250,.18)" stroke="#a78bfa" stroke-width="3"/>
-          <text x="148" y="131" fill="#e9ddff" text-anchor="middle" font-size="10" font-weight="800">CH</text>
-        </svg>
-      </div>
-      <div class="card">
-        <span class="pill yellow">Inducement</span>
-        <h2>Hiérarchie des zones</h2>
-        <p class="muted">Toutes les zones ne se valent pas. Le prototype te force à distinguer une zone mère d'une zone secondaire qui attire les entrées trop tôt.</p>
-        <ul class="list">
-          <li>Zone extrême avant impulsion = priorité</li>
-          <li>Zone intermédiaire = méfiance</li>
-          <li>Balayage puis vraie réaction = scénario classique</li>
-        </ul>
-      </div>
-    </section>
-
-    <section class="section card" id="analyzer">
-      <span class="pill blue">Analyse multi-timeframe</span>
-      <h2>Advisor screenshot M1 / M5 / M15</h2>
-      <p class="muted">Ajoute tes captures, puis renseigne les critères. Le système calcule un score <strong>Long / Short / No trade</strong> à partir des réponses, mais la décision finale reste humaine.</p>
-
-      <div class="upload-grid" style="margin-top:14px">
-        <div class="dropzone">
-          <strong>Capture M15</strong>
-          <input type="file" id="img15" accept="image/*">
-          <div class="preview" id="prev15">Aperçu M15</div>
-        </div>
-        <div class="dropzone">
-          <strong>Capture M5</strong>
-          <input type="file" id="img5" accept="image/*">
-          <div class="preview" id="prev5">Aperçu M5</div>
-        </div>
-        <div class="dropzone">
-          <strong>Capture M1</strong>
-          <input type="file" id="img1" accept="image/*">
-          <div class="preview" id="prev1">Aperçu M1</div>
-        </div>
-      </div>
-
-      <div class="form-grid" style="margin-top:16px">
-        <div class="field"><label>Tendance M15</label><select id="trend"><option value="0">Neutre / range</option><option value="2">Haussière claire</option><option value="-2">Baissière claire</option><option value="1">Haussière fragile</option><option value="-1">Baissière fragile</option></select></div>
-        <div class="field"><label>Zone mère M5 identifiée ?</label><select id="mother"><option value="0">Non / doute</option><option value="2">Oui, très propre</option><option value="1">Oui, mais moyenne</option></select></div>
-        <div class="field"><label>Le prix est dans la zone ?</label><select id="zoneTouch"><option value="0">Non</option><option value="2">Oui, au contact / dedans</option><option value="1">Proche mais pas dedans</option></select></div>
-        <div class="field"><label>Réaction M1 dans la zone</label><select id="reaction"><option value="0">Aucune</option><option value="2">Rejet / absorption visible</option><option value="1">Ralentissement léger</option></select></div>
-        <div class="field"><label>CHoCH / cassure locale M1</label><select id="choch"><option value="0">Non</option><option value="2">Oui, clair</option><option value="1">Oui, mais sale</option></select></div>
-        <div class="field"><label>Pullback / retest après cassure</label><select id="retest"><option value="0">Pas de retest</option><option value="2">Retest propre</option><option value="1">Retest moyen</option></select></div>
-        <div class="field"><label>Confluence volume / delta</label><select id="delta"><option value="0">Aucune donnée</option><option value="2">Confluence claire</option><option value="1">Confluence légère</option><option value="-1">Conflit avec l'idée</option></select></div>
-        <div class="field"><label>Liquidité proche / objectif logique</label><select id="liquidity"><option value="0">Pas clair</option><option value="2">Oui, objectif évident</option><option value="1">Objectif possible</option></select></div>
-        <div class="field"><label>Qualité du contexte session</label><select id="session"><option value="0">Heure moyenne</option><option value="2">Open / moment propre</option><option value="1">Volatilité correcte</option><option value="-1">Heure faible / marché sale</option></select></div>
-        <div class="field"><label>Biais recherché</label><select id="bias"><option value="short">Short</option><option value="long">Long</option><option value="neutral">Neutre / laisser l'outil choisir</option></select></div>
-        <div class="field"><label>Plan d'invalidation</label><input id="invalid" placeholder="Ex : au-dessus du mini sommet M1"></div>
-        <div class="field"><label>Notes de contexte</label><textarea id="notes" placeholder="Ex : sweep sur HOD, retour dans supply 5m, CVD qui diverge..."></textarea></div>
-      </div>
-
-      <div class="decision-grid" style="margin-top:16px">
-        <div class="score-card">
-          <h3>Résultat</h3>
-          <div class="score-bar"><div class="score-fill" id="fill"></div></div>
-          <div class="decision" id="decision">No trade</div>
-          <p class="muted" id="summary">Renseigne les critères puis clique sur analyser.</p>
-          <div class="tag-row" id="tags"></div>
-        </div>
-        <div class="score-card">
-          <h3>Checklist automatique</h3>
-          <ul class="list" id="checklist">
-            <li>Contexte non analysé.</li>
-            <li>Zone mère non validée.</li>
-            <li>Pas encore de décision.</li>
-          </ul>
-          <button class="btn btn-primary" style="margin-top:14px;width:100%" onclick="analyzeTrade()">Analyser le setup</button>
-        </div>
-      </div>
-    </section>
-
-    <section class="section footer-grid">
-      <div class="card">
-        <span class="pill green">GitHub</span>
-        <h2>Déploiement simple</h2>
-        <ol class="steps">
-          <li>Créer un dépôt GitHub nommé <code class="inline">fabervaale-advisor</code>.</li>
-          <li>Ajouter ce fichier comme <code class="inline">index.html</code>.</li>
-          <li>Pousser le repo puis activer GitHub Pages dans Settings → Pages.</li>
-          <li>Sélectionner la branche <code class="inline">main</code> et le dossier root.</li>
-          <li>Ton site sera en ligne en quelques instants.</li>
-        </ol>
-      </div>
-      <div class="card">
-        <span class="pill violet">Suite logique</span>
-        <h2>Version premium à construire</h2>
-        <ul class="list">
-          <li>Passage en interface mobile-first React / Next.js.</li>
-          <li>Vrai système de scoring pondéré par session et qualité de zone.</li>
-          <li>Compte utilisateur, journal, historique de screenshots.</li>
-          <li>Module de revue post-trade et statistiques.</li>
-          <li>Plus tard : backend d'analyse image, jamais en mode “signal magique”.</li>
-        </ul>
-      </div>
-    </section>
+    </div>
   </div>
 
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <div class="chip">MOBILE FIRST • DARK MODE • MÉMOIRE LOCALE</div>
+        <h1>Prends moins de trades.<br>Prends de meilleurs trades.</h1>
+        <p>
+          Cette V2 sert à organiser un setup de scalping style order flow en mode multi-timeframe.
+          Elle ne promet pas un signal magique : elle t’oblige à valider le contexte, la zone mère, la réaction M1, l’invalidation et le suivi post-trade.
+        </p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="showTab('analyzer')">Ouvrir l’analyse</button>
+          <button class="btn btn-ghost" onclick="showTab('guide')">Où trouver les données</button>
+        </div>
+        <div class="hero-steps">
+          <div class="step"><div class="step-num">1</div><div><b>Contextualise</b><span>Regarde M15 pour le biais, M5 pour la zone mère, M1 pour l’exécution.</span></div></div>
+          <div class="step"><div class="step-num">2</div><div><b>Valide</b><span>Attends le retour du prix dans la zone, puis une rotation propre en M1.</span></div></div>
+          <div class="step"><div class="step-num">3</div><div><b>Enregistre</b><span>Garde une trace du setup, puis reviens 30 min plus tard pour juger TP / SL / invalidation.</span></div></div>
+        </div>
+      </div>
+      <div class="hero-grid">
+        <div class="stat"><h4>Cadre</h4><p>15m contexte • 5m zone • 1m exécution</p></div>
+        <div class="stat"><h4>Marchés</h4><p>NQ / MNQ puis ES / MES</p></div>
+        <div class="stat"><h4>Décision</h4><p>Long / Short / No trade avec score pondéré</p></div>
+        <div class="stat"><h4>Suivi</h4><p>Mémoire locale du navigateur + journal manuel</p></div>
+      </div>
+    </section>
+
+    <div class="tabs" style="margin-top:16px">
+      <button class="tab active" data-tab="home" onclick="showTab('home')">Vue générale</button>
+      <button class="tab" data-tab="analyzer" onclick="showTab('analyzer')">Analyse setup</button>
+      <button class="tab" data-tab="guide" onclick="showTab('guide')">Guide des données</button>
+      <button class="tab" data-tab="journal" onclick="showTab('journal')">Journal & stats</button>
+    </div>
+
+    <section id="home" class="section active">
+      <div class="tutorial">
+        <div class="card">
+          <div class="badge badge-blue">Tutoriel rapide</div>
+          <h2>Comment t’en servir en 45 secondes</h2>
+          <ol class="list-clean">
+            <li>Prends 3 captures : M15, M5, M1.</li>
+            <li>Ouvre l’onglet <b>Analyse setup</b>.</li>
+            <li>Remplis seulement ce que tu vois vraiment, pas ce que tu espères voir.</li>
+            <li>Clique sur <b>Analyser le setup</b>.</li>
+            <li>Ajoute l’analyse au journal, puis fais une revue 30 minutes après.</li>
+          </ol>
+          <p>
+            Le but du site est de réduire l’impulsivité. S’il n’y a pas de contexte clair, pas de vraie zone, ou pas de CHoCH propre, la bonne décision reste souvent <b>no trade</b>.
+          </p>
+        </div>
+        <div class="card">
+          <div class="badge badge-purple">Exemples pédagogiques</div>
+          <h2>Schémas simplifiés</h2>
+          <p>
+            Pour rester lisible, les visuels ci-dessous sont des reconstructions stylisées. Tu peux ensuite les comparer à tes propres screenshots M15 / M5 / M1.
+          </p>
+          <div class="legend">
+            <span>ligne pointillée = chemin du prix</span>
+            <span>zone mère = rectangle bleu</span>
+            <span>CH = changement de caractère</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-3" style="margin-top:16px">
+        <div class="card">
+          <div class="badge badge-red">Short</div>
+          <div class="example-chart">
+            <svg viewBox="0 0 420 240" aria-hidden="true">
+              <path d="M20 170 C60 160, 85 145, 120 150 S180 140, 210 130 S255 95, 280 75 S330 62, 390 45" fill="none" stroke="#f5c244" stroke-width="6" stroke-linecap="round" stroke-dasharray="8 8"/>
+              <path d="M35 192 C90 176, 130 162, 164 145 S228 122, 262 98 S330 72, 360 46" fill="none" stroke="#ff6f7d" stroke-width="7" stroke-linecap="round"/>
+              <rect x="248" y="22" rx="14" ry="14" width="116" height="40" fill="rgba(105,168,255,.12)" stroke="#7eb4ff" stroke-width="3"/>
+              <text x="275" y="48" fill="#eaf2ff" font-size="18" font-weight="700">Zone mère</text>
+              <circle cx="205" cy="120" r="15" fill="rgba(155,123,255,.25)" stroke="#b79cff" stroke-width="3"/>
+              <text x="193" y="126" fill="#fff" font-size="14" font-weight="800">CH</text>
+            </svg>
+          </div>
+          <p class="caption">Exemple short : retour dans supply, rotation M1, puis vente sur retest avec invalidation courte.</p>
+        </div>
+        <div class="card">
+          <div class="badge badge-green">Long</div>
+          <div class="example-chart">
+            <svg viewBox="0 0 420 240" aria-hidden="true">
+              <path d="M20 180 C55 165, 95 160, 128 150 S186 147, 226 122 S290 88, 390 36" fill="none" stroke="#f5c244" stroke-width="6" stroke-linecap="round" stroke-dasharray="8 8"/>
+              <path d="M70 164 C105 145, 135 136, 165 128 S218 115, 252 94 S310 60, 388 20" fill="none" stroke="#35d0d8" stroke-width="7" stroke-linecap="round"/>
+              <rect x="58" y="136" rx="14" ry="14" width="126" height="42" fill="rgba(105,168,255,.12)" stroke="#7eb4ff" stroke-width="3"/>
+              <text x="88" y="163" fill="#eaf2ff" font-size="18" font-weight="700">Zone mère</text>
+              <circle cx="180" cy="104" r="15" fill="rgba(155,123,255,.25)" stroke="#b79cff" stroke-width="3"/>
+              <text x="168" y="110" fill="#fff" font-size="14" font-weight="800">CH</text>
+            </svg>
+          </div>
+          <p class="caption">Exemple long : retour dans demand, CHoCH haussier local, achat sur pullback propre.</p>
+        </div>
+        <div class="card">
+          <div class="badge badge-yellow">Cas pratique</div>
+          <h2>Comment mieux visualiser avec de vrais charts</h2>
+          <ul class="list-clean">
+            <li>Ajoute tes meilleurs screenshots dans le journal.</li>
+            <li>Tague-les : long propre, short propre, inducement, no trade.</li>
+            <li>Fais une capture 30 min plus tard pour valider le résultat.</li>
+            <li>À force, tu construis ta propre bibliothèque de références réelles.</li>
+          </ul>
+          <p>
+            C’est plus utile que des images génériques seules, parce que tu crées une base visuelle issue de ton propre marché, à tes propres heures, avec tes propres erreurs.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="analyzer" class="section">
+      <div class="card">
+        <div class="badge badge-blue">Analyse multi-timeframe</div>
+        <h2>Advisor screenshot M1 / M5 / M15</h2>
+        <p>Ajoute tes captures, renseigne les critères, puis sauvegarde le résultat dans le journal local.</p>
+
+        <div class="analyzer-grid" style="margin-top:14px">
+          <div class="upload-box">
+            <label>Capture M15</label>
+            <input type="file" accept="image/*" onchange="previewFile(event,'prev15')">
+            <div id="prev15" class="preview">Aperçu M15</div>
+          </div>
+          <div class="upload-box">
+            <label>Capture M5</label>
+            <input type="file" accept="image/*" onchange="previewFile(event,'prev5')">
+            <div id="prev5" class="preview">Aperçu M5</div>
+          </div>
+          <div class="upload-box">
+            <label>Capture M1</label>
+            <input type="file" accept="image/*" onchange="previewFile(event,'prev1')">
+            <div id="prev1" class="preview">Aperçu M1</div>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div><label>Tendance M15</label><select id="trend15"><option value="0">Neutre / range</option><option value="18">Haussier clair</option><option value="18">Baissier clair</option><option value="8">Biais léger</option></select></div>
+          <div><label>Zone mère M5 identifiée ?</label><select id="zone5"><option value="0">Non / doute</option><option value="16">Oui, zone propre</option><option value="8">Oui, mais moyenne</option></select></div>
+          <div><label>Le prix est dans la zone ?</label><select id="inzone"><option value="0">Non</option><option value="10">Oui, en contact</option><option value="14">Oui, au cœur de zone</option></select></div>
+          <div><label>Réaction M1 dans la zone</label><select id="reaction"><option value="0">Aucune</option><option value="8">Ralentissement</option><option value="14">Rejet / absorption visible</option></select></div>
+          <div><label>CHoCH / cassure locale M1</label><select id="choch"><option value="0">Non</option><option value="8">Début de cassure</option><option value="16">Oui, propre</option></select></div>
+          <div><label>Pullback / retest après cassure</label><select id="retest"><option value="0">Pas de retest</option><option value="8">Retest brouillon</option><option value="14">Retest propre</option></select></div>
+          <div><label>Confluence volume / delta</label><select id="volume"><option value="0">Aucune donnée</option><option value="6">Confluence légère</option><option value="12">Confluence nette</option></select></div>
+          <div><label>Liquidité proche / objectif logique</label><select id="liq"><option value="0">Pas clair</option><option value="6">Moyen</option><option value="10">Oui, très clair</option></select></div>
+          <div><label>Qualité du contexte session</label><select id="session"><option value="4">Heure moyenne</option><option value="10">Open / heure active</option><option value="0">Heure morte</option></select></div>
+          <div><label>Biais recherché</label><select id="bias"><option value="SHORT">Short</option><option value="LONG">Long</option></select></div>
+          <div><label>Plan d’invalidation</label><input id="invalid" placeholder="Ex : au-dessus du mini sommet M1"></div>
+          <div><label>Notes de contexte</label><textarea id="notes" placeholder="Ex : sweep HOD, retour dans supply 5m, delta qui diverge..."></textarea></div>
+        </div>
+
+        <div class="result-wrap">
+          <div class="card" style="padding:16px;margin-top:16px">
+            <h3>Résultat</h3>
+            <div class="scorebar"><div id="scoreFill" class="scorefill"></div></div>
+            <div id="decision" class="result-title">No trade</div>
+            <p id="decisionText" class="muted">Renseigne les critères puis clique sur analyser.</p>
+            <div class="journal-actions" style="margin-top:14px">
+              <button class="btn btn-primary" onclick="analyzeSetup()">Analyser le setup</button>
+              <button class="btn btn-ghost" onclick="saveToJournal()">Ajouter au journal</button>
+            </div>
+          </div>
+          <div class="card" style="padding:16px;margin-top:16px">
+            <h3>Checklist automatique</h3>
+            <ul id="checklist" class="checklist">
+              <li>Contexte non analysé.</li>
+              <li>Zone mère non validée.</li>
+              <li>Pas encore de décision.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="badge badge-green">Review post-trade</div>
+          <h3>Boucle d’amélioration</h3>
+          <p>Après 30 minutes ou à la fin du move, reviens dans le journal et indique si le setup a donné TP, SL ou invalidation. Le site conservera l’historique localement dans ton navigateur.</p>
+          <ul class="list-clean">
+            <li>Ajoute un second screenshot dans tes notes.</li>
+            <li>Note si le score de départ était trop optimiste ou trop prudent.</li>
+            <li>Regarde si tes meilleurs setups reviennent aux mêmes heures.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="badge badge-purple">Important</div>
+          <h3>Mémoire locale, pas vraie IA autonome</h3>
+          <p>
+            Cette V2 retient tes analyses et tes résultats dans le navigateur grâce à une mémoire locale. Elle peut donc t’aider à observer tes patterns, mais elle ne “s’entraîne” pas seule comme un modèle d’IA.
+          </p>
+          <p>
+            La prochaine vraie étape serait un backend qui stocke l’historique, calcule les statistiques automatiquement, puis réajuste le scoring selon tes données réelles.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="guide" class="section">
+      <div class="card">
+        <div class="badge badge-yellow">Guide des données</div>
+        <h2>Où trouver les infos à renseigner</h2>
+        <p>Si un jour tu partages le site, cette section explique simplement à tes utilisateurs où récupérer les éléments nécessaires.</p>
+        <div class="guide-cards" style="margin-top:14px">
+          <div class="source">
+            <b>M15 / M5 / M1</b>
+            <div>TradingView, MT5, plateforme futures, broker chart ou capture plateforme maison.</div>
+          </div>
+          <div class="source">
+            <b>Zone mère</b>
+            <div>Lecture visuelle sur M5 : dernière zone acheteuse/vendeuse avant impulsion cassant la structure.</div>
+          </div>
+          <div class="source">
+            <b>CHoCH M1</b>
+            <div>Graphique M1 : petit sommet ou petit creux cassé dans le sens attendu après retour en zone.</div>
+          </div>
+          <div class="source">
+            <b>Volume / Delta / CVD</b>
+            <div>Footprint, DOM, CVD ou volume tools sur plateformes futures. Sinon laisse neutre si tu n’as pas la donnée.</div>
+          </div>
+          <div class="source">
+            <b>Liquidité / objectif</b>
+            <div>HOD / LOD, swing high/low, equal highs/lows, extrêmes de session, target logique.</div>
+          </div>
+          <div class="source">
+            <b>Contexte session</b>
+            <div>Open US, heure active, pause midi, fin de session. Plus l’heure est vivante, plus le contexte est exploitable.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="badge badge-blue">Lecture simple</div>
+          <h3>Ce que l’utilisateur doit voir</h3>
+          <ul class="list-clean">
+            <li><b>M15 :</b> est-ce directionnel ou brouillon ?</li>
+            <li><b>M5 :</b> ai-je une vraie zone mère ou juste un niveau moyen ?</li>
+            <li><b>M1 :</b> le prix réagit-il vraiment dans la zone ?</li>
+            <li><b>Exécution :</b> ai-je une cassure locale puis un retest propre ?</li>
+            <li><b>Objectif :</b> où la liquidité peut-elle être prise ?</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="badge badge-red">Ce qu’il faut éviter</div>
+          <ul class="list-clean">
+            <li>Remplir les champs selon un espoir au lieu d’un fait visible.</li>
+            <li>Forcer un CHoCH alors que la microstructure n’a pas tourné.</li>
+            <li>Appeler “zone mère” une zone secondaire d’inducement.</li>
+            <li>Prendre un trade hors heure active puis accuser la stratégie.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="journal" class="section">
+      <div class="card">
+        <div class="badge badge-purple">Journal & mémoire</div>
+        <h2>Suivi de tes trades</h2>
+        <p>Tout ce qui est ajouté ici est stocké dans le navigateur. Tu peux gérer ton historique manuellement, faire une revue quotidienne, puis exporter plus tard si tu veux une vraie base de données.</p>
+        <div class="kpi-row" style="margin-top:14px">
+          <div class="kpi"><div>Total setups</div><strong id="kpiTotal">0</strong></div>
+          <div class="kpi"><div>Long</div><strong id="kpiLong">0</strong></div>
+          <div class="kpi"><div>Short</div><strong id="kpiShort">0</strong></div>
+          <div class="kpi"><div>No trade</div><strong id="kpiNo">0</strong></div>
+        </div>
+        <div class="journal-actions" style="margin-top:16px">
+          <button class="btn btn-ghost" onclick="exportJournal()">Exporter JSON</button>
+          <button class="btn btn-ghost" onclick="clearJournal()">Vider le journal</button>
+          <button class="btn btn-primary" onclick="refreshJournal()">Actualiser</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Récap quotidien</h3>
+        <p class="muted" id="dailyRecap">Aucune donnée pour le moment.</p>
+      </div>
+
+      <div class="card">
+        <h3>Historique</h3>
+        <div style="overflow:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Biais</th>
+                <th>Décision</th>
+                <th>Score</th>
+                <th>Invalidation</th>
+                <th>Notes</th>
+                <th>Issue</th>
+              </tr>
+            </thead>
+            <tbody id="journalBody">
+              <tr><td colspan="7">Aucune entrée enregistrée.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer-note">
+      Advisor V2 : outil d’aide à la décision et de revue. Pas de promesse de rendement, pas d’exécution automatique.
+    </div>
+  </main>
+
   <script>
-    function previewImage(inputId, previewId){
-      const input = document.getElementById(inputId);
-      const preview = document.getElementById(previewId);
-      input.addEventListener('change', () => {
-        const file = input.files && input.files[0];
-        if(!file){ preview.textContent = 'Aperçu'; return; }
-        const reader = new FileReader();
-        reader.onload = e => {
-          preview.innerHTML = '<img src="'+e.target.result+'" alt="preview">';
-        };
-        reader.readAsDataURL(file);
-      });
+    const sections=[...document.querySelectorAll('.section')];
+    const tabs=[...document.querySelectorAll('.tab')];
+
+    function showTab(id){
+      sections.forEach(s=>s.classList.toggle('active', s.id===id));
+      tabs.forEach(t=>t.classList.toggle('active', t.dataset.tab===id));
+      window.scrollTo({top:0,behavior:'smooth'});
     }
 
-    previewImage('img15','prev15');
-    previewImage('img5','prev5');
-    previewImage('img1','prev1');
+    function previewFile(event,targetId){
+      const file=event.target.files[0];
+      const target=document.getElementById(targetId);
+      if(!file) return;
+      const reader=new FileReader();
+      reader.onload=e=>{
+        target.style.backgroundImage=`url('${e.target.result}')`;
+        target.textContent='';
+      };
+      reader.readAsDataURL(file);
+    }
 
-    function analyzeTrade(){
-      const trend = Number(document.getElementById('trend').value);
-      const mother = Number(document.getElementById('mother').value);
-      const zoneTouch = Number(document.getElementById('zoneTouch').value);
-      const reaction = Number(document.getElementById('reaction').value);
-      const choch = Number(document.getElementById('choch').value);
-      const retest = Number(document.getElementById('retest').value);
-      const delta = Number(document.getElementById('delta').value);
-      const liquidity = Number(document.getElementById('liquidity').value);
-      const session = Number(document.getElementById('session').value);
-      const bias = document.getElementById('bias').value;
-      const invalid = document.getElementById('invalid').value.trim();
-      const notes = document.getElementById('notes').value.trim();
+    function analyzeSetup(){
+      const ids=['trend15','zone5','inzone','reaction','choch','retest','volume','liq','session'];
+      let score=0;
+      ids.forEach(id=>score += Number(document.getElementById(id).value||0));
+      const bias=document.getElementById('bias').value;
+      const invalid=document.getElementById('invalid').value.trim();
+      const notes=document.getElementById('notes').value.trim();
+      let decision='No trade';
+      let expl='Le setup n’est pas encore assez propre.';
+      if(score>=72){decision=bias==='LONG'?'Long possible':'Short possible'; expl='Contexte, zone et déclencheur semblent bien alignés. Discipline d’exécution obligatoire.'}
+      else if(score>=52){decision='Setup surveillable'; expl='Il y a quelque chose à suivre, mais la confirmation ou la clarté reste incomplète.'}
+      else if(score>=32){decision='Prudence maximum'; expl='Quelques éléments existent, mais le setup reste fragile ou incomplet.'}
+      const fill=Math.min(100,Math.max(8,Math.round((score/110)*100)));
+      document.getElementById('scoreFill').style.width=fill+'%';
+      document.getElementById('decision').textContent=decision;
+      document.getElementById('decisionText').textContent=expl;
 
-      let base = mother + zoneTouch + reaction + choch + retest + delta + liquidity + session;
-      let directionScore = 0;
-      if (bias === 'long') directionScore = trend > 0 ? 2 + trend : -3;
-      else if (bias === 'short') directionScore = trend < 0 ? 2 + Math.abs(trend) : -3;
-      else directionScore = trend;
+      const checklist=[];
+      if(Number(document.getElementById('trend15').value)<8) checklist.push('Contexte M15 peu clair.'); else checklist.push('Contexte M15 acceptable.');
+      if(Number(document.getElementById('zone5').value)<8) checklist.push('Zone mère non validée.'); else checklist.push('Zone mère repérée.');
+      if(Number(document.getElementById('inzone').value)<8) checklist.push('Le prix n’est pas encore dans la zone.'); else checklist.push('Le prix travaille la zone.');
+      if(Number(document.getElementById('choch').value)<8) checklist.push('Pas de CHoCH propre pour l’instant.'); else checklist.push('Rotation M1 présente.');
+      if(Number(document.getElementById('retest').value)<8) checklist.push('Retest non confirmé.'); else checklist.push('Retest exploitable.');
+      if(!invalid) checklist.push('Plan d’invalidation non renseigné.');
+      if(!notes) checklist.push('Ajoute une note de contexte rapide.');
+      const ul=document.getElementById('checklist');
+      ul.innerHTML=checklist.map(x=>`<li>${x}</li>`).join('');
+      window.currentAnalysis={
+        date:new Date().toLocaleString('fr-FR'),
+        bias,
+        decision,
+        score,
+        invalidation:invalid,
+        notes,
+        outcome:'À revoir'
+      };
+    }
 
-      let score = base + directionScore;
-      let max = 20;
-      let pct = Math.max(0, Math.min(100, Math.round((score / max) * 100)));
-      let decision = 'No trade';
-      let summary = 'Le setup ne réunit pas encore assez de critères.';
-      let tags = [];
+    function getJournal(){
+      try{return JSON.parse(localStorage.getItem('fabervaaleJournal')||'[]')}catch(e){return []}
+    }
+    function setJournal(data){localStorage.setItem('fabervaaleJournal', JSON.stringify(data))}
 
-      const trendText = trend > 0 ? 'contexte haussier' : trend < 0 ? 'contexte baissier' : 'contexte neutre';
+    function saveToJournal(){
+      if(!window.currentAnalysis){analyzeSetup()}
+      const arr=getJournal();
+      arr.unshift(window.currentAnalysis);
+      setJournal(arr);
+      refreshJournal();
+      alert('Analyse ajoutée au journal local.');
+    }
 
-      if (score >= 13) {
-        decision = bias === 'short' ? 'SHORT possible' : bias === 'long' ? 'LONG possible' : trend >= 0 ? 'LONG possible' : 'SHORT possible';
-        summary = 'Le setup est cohérent sur plusieurs critères. Il faut encore vérifier le stop, l’invalidation et le ratio avant d’entrer.';
-        tags = ['zone validée','rotation M1','confluence acceptable', trendText];
-      } else if (score >= 9) {
-        decision = 'Setup surveillable';
-        summary = 'Il y a une base intéressante mais la confirmation reste incomplète. Attends un meilleur retest ou une cassure plus propre.';
-        tags = ['potentiel présent','patience', trendText];
-      } else {
-        tags = ['pas assez propre', trendText];
+    function refreshJournal(){
+      const arr=getJournal();
+      const body=document.getElementById('journalBody');
+      if(!arr.length){
+        body.innerHTML='<tr><td colspan="7">Aucune entrée enregistrée.</td></tr>';
+        document.getElementById('kpiTotal').textContent='0';
+        document.getElementById('kpiLong').textContent='0';
+        document.getElementById('kpiShort').textContent='0';
+        document.getElementById('kpiNo').textContent='0';
+        document.getElementById('dailyRecap').textContent='Aucune donnée pour le moment.';
+        return;
       }
-
-      if (!invalid) tags.push('invalidation absente');
-      if (!notes) tags.push('notes manquantes');
-
-      document.getElementById('fill').style.width = pct + '%';
-      document.getElementById('decision').textContent = decision + ' • ' + pct + '/100';
-      document.getElementById('summary').textContent = summary;
-      document.getElementById('tags').innerHTML = tags.map(t => '<span class="tag">'+t+'</span>').join('');
-
-      const checklist = [];
-      checklist.push(trend !== 0 ? 'Contexte défini.' : 'Contexte encore neutre ou flou.');
-      checklist.push(mother > 0 ? 'Zone mère identifiée.' : 'Zone mère non validée.');
-      checklist.push(zoneTouch > 0 ? 'Prix proche / dans la zone.' : 'Le prix n’est pas encore au bon endroit.');
-      checklist.push(reaction > 0 ? 'Réaction M1 détectée.' : 'Pas de vraie réaction M1.');
-      checklist.push(choch > 0 ? 'Cassure locale / CHoCH présente.' : 'Pas de confirmation structurelle M1.');
-      checklist.push(retest > 0 ? 'Retest exploitable.' : 'Pas de retest propre.');
-      checklist.push(invalid ? 'Invalidation notée : ' + invalid : 'Ajoute une invalidation claire avant toute entrée.');
-      document.getElementById('checklist').innerHTML = checklist.map(i => '<li>'+i+'</li>').join('');
+      body.innerHTML=arr.map((row,idx)=>{
+        const cls = row.decision.includes('Long') ? 'pill-long' : row.decision.includes('Short') ? 'pill-short' : 'pill-no';
+        return `<tr>
+          <td>${row.date}</td>
+          <td>${row.bias}</td>
+          <td><span class="pill ${cls}">${row.decision}</span></td>
+          <td>${row.score}</td>
+          <td>${row.invalidation || '-'}</td>
+          <td>${row.notes || '-'}</td>
+          <td>
+            <select onchange="updateOutcome(${idx}, this.value)">
+              <option ${row.outcome==='À revoir'?'selected':''}>À revoir</option>
+              <option ${row.outcome==='TP'?'selected':''}>TP</option>
+              <option ${row.outcome==='SL'?'selected':''}>SL</option>
+              <option ${row.outcome==='Invalidé'?'selected':''}>Invalidé</option>
+              <option ${row.outcome==='No trade respecté'?'selected':''}>No trade respecté</option>
+            </select>
+          </td>
+        </tr>`;
+      }).join('');
+      document.getElementById('kpiTotal').textContent=arr.length;
+      document.getElementById('kpiLong').textContent=arr.filter(x=>x.decision.includes('Long')).length;
+      document.getElementById('kpiShort').textContent=arr.filter(x=>x.decision.includes('Short')).length;
+      document.getElementById('kpiNo').textContent=arr.filter(x=>x.decision.includes('No trade') || x.decision.includes('Prudence') || x.decision.includes('surveillable')).length;
+      const today=new Date().toLocaleDateString('fr-FR');
+      const todayRows=arr.filter(x=>x.date.startsWith(today));
+      const tp=todayRows.filter(x=>x.outcome==='TP').length;
+      const sl=todayRows.filter(x=>x.outcome==='SL').length;
+      const nt=todayRows.filter(x=>x.outcome==='No trade respecté').length;
+      document.getElementById('dailyRecap').textContent=`Aujourd’hui : ${todayRows.length} setup(s), ${tp} TP, ${sl} SL, ${nt} no trade respecté(s).`;
     }
+
+    function updateOutcome(idx, value){
+      const arr=getJournal();
+      if(!arr[idx]) return;
+      arr[idx].outcome=value;
+      setJournal(arr);
+      refreshJournal();
+    }
+
+    function clearJournal(){
+      if(confirm('Vider tout le journal local ?')){
+        localStorage.removeItem('fabervaaleJournal');
+        refreshJournal();
+      }
+    }
+
+    function exportJournal(){
+      const data=getJournal();
+      const blob=new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download='fabervaale-journal.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    refreshJournal();
   </script>
 </body>
 </html>
